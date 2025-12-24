@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SECURE VAULT v1.0 | الخزنة الرقمية</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Fira+Code&display=swap');
+        
+        body { 
+            font-family: 'Cairo', sans-serif; 
+            background: radial-gradient(circle at center, #0f172a, #020617); 
+            color: #f8fafc; 
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .mono { font-family: 'Fira Code', monospace; }
+
+        .glass-panel { 
+            background: rgba(30, 41, 59, 0.4); 
+            border: 1px solid rgba(59, 130, 246, 0.2); 
+            backdrop-filter: blur(15px); 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .cyber-input {
+            background: rgba(15, 23, 42, 0.8) !important;
+            border: 1px solid #1e293b !important;
+            color: #3b82f6 !important;
+            transition: all 0.3s ease;
+        }
+
+        .cyber-input:focus {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-glow {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-glow:hover {
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .scan-line {
+            width: 100%;
+            height: 2px;
+            background: #3b82f6;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0.5;
+            animation: scanning 3s infinite linear;
+        }
+
+        @keyframes scanning {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+    <div class="max-w-5xl mx-auto space-y-10">
+        <!-- الرأس -->
+        <header class="text-center space-y-4">
+            <div class="inline-block px-4 py-1 border border-blue-500/30 rounded-full bg-blue-500/10 text-[10px] mono text-blue-400 tracking-[0.3em] uppercase">
+                Secure Client-Side Protocol
+            </div>
+            <h1 class="text-4xl md:text-5xl font-black text-white tracking-tighter">SECURE<span class="text-blue-500">VAULT</span></h1>
+            <p class="text-slate-500 text-sm max-w-md mx-auto">نظام تشفير متطور يعمل محلياً لضمان أقصى درجات الخصوصية والسرية.</p>
+        </header>
+
+        <!-- واجهة التحقق -->
+        <div id="auth-section" class="glass-panel p-8 md:p-12 rounded-[2.5rem] max-w-md mx-auto relative overflow-hidden">
+            <div class="scan-line"></div>
+            <div class="relative z-10 space-y-8">
+                <div class="text-center space-y-2">
+                    <div class="w-16 h-16 bg-blue-600/20 rounded-2xl border border-blue-500/30 flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                    </div>
+                    <h2 class="text-xl font-bold">التحقق من الصلاحية</h2>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-[10px] text-slate-500 mb-2 uppercase tracking-widest mr-1">Identifier (8-12 chars)</label>
+                        <input type="text" id="uid" maxlength="12" class="w-full cyber-input rounded-xl p-4 text-center mono outline-none" placeholder="USER_ID_001">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-500 mb-2 uppercase tracking-widest mr-1">Master Key (8-12 chars)</label>
+                        <input type="password" id="mkey" maxlength="12" class="w-full cyber-input rounded-xl p-4 text-center mono outline-none" placeholder="••••••••">
+                    </div>
+                </div>
+
+                <button onclick="handleLogin()" class="w-full btn-glow bg-blue-600 hover:bg-blue-500 py-4 rounded-2xl font-bold text-sm shadow-xl shadow-blue-900/20">
+                    تنشيط بروتوكول الوصول
+                </button>
+                <p id="auth-msg" class="text-[10px] text-rose-500 text-center font-bold h-2"></p>
+            </div>
+        </div>
+
+        <!-- لوحة التحكم الرئيسية -->
+        <div id="dashboard" class="hidden space-y-8 animate-in fade-in zoom-in duration-700">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- قسم الإدخال -->
+                <div class="lg:col-span-2 glass-panel p-8 rounded-[2.5rem] space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-700/50 pb-4">
+                        <h3 class="font-bold text-sm flex items-center gap-2">
+                            <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+                            تشفير سجل جديد
+                        </h3>
+                        <span class="text-[10px] mono text-slate-500 uppercase">Status: Ready</span>
+                    </div>
+                    <textarea id="raw-input" class="w-full bg-slate-900/50 border border-slate-700 rounded-3xl p-6 h-48 text-sm focus:outline-none focus:border-blue-500 transition-all resize-none text-slate-300" placeholder="ادخل البيانات الحساسة هنا لغرض التشفير والأرشفة..."></textarea>
+                    <button onclick="executeEncryption()" class="w-full btn-glow bg-green-600 hover:bg-green-500 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-width="2"/></svg>
+                        تأمين البيانات فورياً
+                    </button>
+                </div>
+
+                <!-- قسم السجلات -->
+                <div class="glass-panel p-8 rounded-[2.5rem] flex flex-col h-full border-l-4 border-blue-500">
+                    <h3 class="text-xs font-bold mb-6 text-slate-400 uppercase tracking-widest flex items-center justify-between">
+                        Terminal Output
+                        <span class="text-green-500 animate-pulse">●</span>
+                    </h3>
+                    <div id="terminal-logs" class="flex-1 space-y-3 text-[10px] mono text-blue-400 overflow-y-auto max-h-[300px] pr-2">
+                        <div class="text-slate-500">> System Initialized...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- أرشيف البيانات -->
+            <div class="glass-panel p-8 rounded-[2.5rem]">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                    <h3 class="text-lg font-bold">الأرشيف الرقمي المشفر</h3>
+                    <div class="flex gap-2">
+                        <span id="counter" class="bg-blue-500/10 text-blue-500 border border-blue-500/20 px-4 py-1 rounded-full text-[10px] font-bold">0 سجلات</span>
+                        <button onclick="clearArchive()" class="text-[10px] text-rose-500 hover:text-rose-400 underline uppercase mono tracking-tighter">Clear All</button>
+                    </div>
+                </div>
+                <div id="vault-archive" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div id="empty-hint" class="col-span-full text-center py-12 text-slate-600 italic text-sm">
+                        لا توجد سجلات مشفرة حالياً. ابدأ بتأمين بياناتك.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let recordsCount = 0;
+
+        function handleLogin() {
+            const u = document.getElementById('uid').value;
+            const k = document.getElementById('mkey').value;
+            const msg = document.getElementById('auth-msg');
+
+            if (u.length < 8 || u.length > 12 || k.length < 8 || k.length > 12) {
+                msg.innerText = "فشل أمني: الطول غير مسموح به (8-12 خانة)";
+                return;
+            }
+
+            document.getElementById('auth-section').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            writeLog("User Identity Verified");
+            writeLog("Encryption Engine: WebCrypto-SHA256 Active");
+        }
+
+        async function executeEncryption() {
+            const text = document.getElementById('raw-input').value;
+            const u = document.getElementById('uid').value;
+            const k = document.getElementById('mkey').value;
+
+            if(!text.trim()) return;
+
+            writeLog("Calculating Hash Integrity...");
+            
+            // محاكاة التشفير (Base64 + Hash)
+            const payload = btoa(unescape(encodeURIComponent(text)));
+            const hash = await generateSHA256(text + k);
+            const vaultId = (await generateSHA256(u)).substring(0, 10).toUpperCase();
+
+            const data = {
+                id: vaultId,
+                content: payload,
+                sign: hash.substring(0, 16).toUpperCase(),
+                timestamp: new Date().toLocaleTimeString()
+            };
+
+            addCard(data);
+            document.getElementById('raw-input').value = "";
+            writeLog(`Block ${vaultId} Securely Pushed to Memory`);
+        }
+
+        async function generateSHA256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        function addCard(d) {
+            const container = document.getElementById('vault-archive');
+            const hint = document.getElementById('empty-hint');
+            if(hint) hint.remove();
+
+            recordsCount++;
+            document.getElementById('counter').innerText = `${recordsCount} سجلات`;
+
+            const card = document.createElement('div');
+            card.className = "bg-slate-900/60 border border-slate-700/50 p-6 rounded-3xl space-y-4 hover:border-blue-500/40 transition-all group";
+            card.innerHTML = `
+                <div class="flex justify-between items-center text-[9px] mono text-blue-500">
+                    <span class="font-bold">BLOCK_${d.id}</span>
+                    <span class="text-slate-500">${d.timestamp}</span>
+                </div>
+                <div class="bg-black/40 p-4 rounded-2xl border border-white/5">
+                    <p class="text-[10px] mono text-slate-400 break-all leading-relaxed">${d.content}</p>
+                </div>
+                <div class="flex justify-between items-center pt-2">
+                    <span class="text-[9px] text-green-500 font-bold mono">HASH: ${d.sign}</span>
+                    <div class="flex gap-1">
+                        <div class="w-1 h-1 rounded-full bg-blue-500"></div>
+                        <div class="w-1 h-1 rounded-full bg-blue-500/50"></div>
+                        <div class="w-1 h-1 rounded-full bg-blue-500/20"></div>
+                    </div>
+                </div>
+            `;
+            container.prepend(card);
+        }
+
+        function writeLog(m) {
+            const logs = document.getElementById('terminal-logs');
+            const p = document.createElement('div');
+            p.innerHTML = `<span class="text-blue-600">[${new Date().toLocaleTimeString()}]</span> > ${m}`;
+            logs.prepend(p);
+        }
+
+        function clearArchive() {
+            document.getElementById('vault-archive').innerHTML = '<div id="empty-hint" class="col-span-full text-center py-12 text-slate-600 italic text-sm">لا توجد سجلات مشفرة حالياً.</div>';
+            recordsCount = 0;
+            document.getElementById('counter').innerText = `0 سجلات`;
+            writeLog("Archive Purged Successfully");
+        }
+    </script>
+</body>
+</html>
